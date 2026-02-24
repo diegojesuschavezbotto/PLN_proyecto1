@@ -1,1 +1,54 @@
-*.txt
+# Python
+
+**pycache**/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Virtual environments
+
+venv/
+.env/
+.venv/
+
+# VSCode
+
+.vscode/
+
+# MacOS
+
+.DS_Store
+
+# Data (no subir bases ni PDFs pesados)
+
+#data/raw/*.pdf
+data/raw/*.txt
+data/processed/*.txt
+
+# Chroma vector database
+
+data/chroma_db/
+
+# Ollama cache (opcional)
+
+*.gguf
+
+# Logs
+
+*.log
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+# Build
+
+dist/
+build/
+*.egg-info/
+
+# Windows
+
+Thumbs.db
