@@ -23,7 +23,7 @@ venv/
 
 # Data (no subir bases ni PDFs pesados)
 
-#data/raw/*.pdf
+data/raw/*.pdf
 data/raw/*.txt
 data/processed/*.txt
 

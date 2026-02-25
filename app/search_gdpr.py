@@ -4,11 +4,11 @@ from typing import List
 
 
 DB_PATH = "data/chroma_db"
-COLLECTION_NAME = "gdpr"
+COLLECTION_NAME = "legal_corpus"
 
 
 class GDPRRetriever:
-    """Módulo de búsqueda semántica sobre el GDPR"""
+    # Módulo de búsqueda semántica sobre el GDPR
 
     def __init__(self):
         print("[INFO] Inicializando retriever...")
@@ -20,7 +20,7 @@ class GDPRRetriever:
         print("[INFO] Retriever listo")
 
     def search(self, query: str, k: int = 3) -> List[str]:
-        """Busca fragmentos relevantes del GDPR"""
+        # Busca fragmentos relevantes del GDPR
         print(f"[INFO] Buscando: {query}")
 
         query_embedding = self.embedder.embed_query(query)

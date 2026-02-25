@@ -9,7 +9,7 @@ CHUNK_OVERLAP = 200
 
 
 def get_splitter() -> RecursiveCharacterTextSplitter:
-    """Devuelve el splitter configurado (usar siempre este)."""
+    # Devuelve el splitter configurado
     return RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP
@@ -17,7 +17,7 @@ def get_splitter() -> RecursiveCharacterTextSplitter:
 
 
 def chunk_text(text: str) -> List[str]:
-    """Divide el texto en fragmentos semánticos."""
+    # Divide el texto en fragmentos semánticos.
     print("[INFO] Generando chunks...")
     splitter = get_splitter()
     chunks = splitter.split_text(text)
@@ -27,7 +27,7 @@ def chunk_text(text: str) -> List[str]:
 
 
 def process_file(input_path: Path) -> List[str]:
-    """Lee archivo y devuelve chunks."""
+    # Lee archivo y devuelve chunks.
     if not input_path.exists():
         raise FileNotFoundError(f"No existe: {input_path}")
 

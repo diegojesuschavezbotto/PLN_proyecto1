@@ -3,23 +3,15 @@ import sys
 import fitz  # PyMuPDF
 
 
-def pdf_to_text(pdf_path: Path) -> str:
-    """
-    Extrae texto preservando layout real del documento.
-    Mucho más preciso que PyPDF2 para documentos legales.
-    """
+def extract_pdf_text(pdf_path: Path) -> str:
+    # Extrae texto preservando layout del PDF
 
-    if not pdf_path.exists():
-        raise FileNotFoundError(f"No se encontró el archivo: {pdf_path}")
-
-    print(f"[INFO] Leyendo PDF: {pdf_path}")
+    print(f"[INFO] Leyendo PDF: {pdf_path.name}")
 
     doc = fitz.open(pdf_path)
     text_pages = []
 
-    print(f"[INFO] Páginas detectadas: {len(doc)}")
-
-    for i, page in enumerate(doc):
+    for page in doc:
         blocks = page.get_text("blocks")
 
         page_text = ""
@@ -27,30 +19,65 @@ def pdf_to_text(pdf_path: Path) -> str:
             page_text += block[4].strip() + "\n"
 
         text_pages.append(page_text)
-        print(f"[DEBUG] Página {i+1} procesada")
 
-    text = "\n".join(text_pages)
-
-    print(f"[INFO] Extracción completada ({len(text)} caracteres)")
-    return text
+    return "\n".join(text_pages)
 
 
 def save_text(text: str, output_path: Path):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(text, encoding="utf-8")
-    print(f"[INFO] Texto guardado en: {output_path}")
+    print(f"[OK] Guardado: {output_path.name}")
+
+
+def process_pdf(pdf_path: Path, output_dir: Path):
+    # Procesa un solo PDF
+    text = extract_pdf_text(pdf_path)
+    output_path = output_dir / (pdf_path.stem + ".txt")
+    save_text(text, output_path)
+
+
+def process_folder(folder_path: Path, output_dir: Path):
+    # Procesa todos los PDFs dentro de una carpeta 
+
+    pdf_files = list(folder_path.rglob("*.pdf"))
+
+    if not pdf_files:
+        print("[WARN] No se encontraron PDFs en la carpeta")
+        return
+
+    print(f"[INFO] PDFs encontrados: {len(pdf_files)}\n")
+
+    for pdf in pdf_files:
+        process_pdf(pdf, output_dir)
+
+    print("\n[OK] Conversión masiva completada")
 
 
 def main():
+
     if len(sys.argv) != 2:
-        print("Uso: python -m pipeline.pdf_to_text <ruta_pdf>")
+        print("Uso:")
+        print("  python -m pipeline.pdf_to_text <archivo.pdf>")
+        print("  python -m pipeline.pdf_to_text <carpeta>")
         return
 
-    pdf_path = Path(sys.argv[1])
-    output_path = Path("data/raw") / (pdf_path.stem + ".txt")
+    input_path = Path(sys.argv[1])
+    output_dir = Path("data/raw")
 
-    text = pdf_to_text(pdf_path)
-    save_text(text, output_path)
+    if not input_path.exists():
+        print("Ruta no existe")
+        return
+
+    # Caso 1: archivo único
+    if input_path.is_file() and input_path.suffix.lower() == ".pdf":
+        process_pdf(input_path, output_dir)
+
+    # Caso 2: carpeta completa
+    elif input_path.is_dir():
+        process_folder(input_path, output_dir)
+
+    else:
+        print("Debe ser un archivo PDF o una carpeta que contenga PDFs")
 
 
 if __name__ == "__main__":

@@ -16,15 +16,23 @@ def normalize_text(text: str) -> str:
 
     return text
 
-
 def remove_headers_footers(text: str) -> str:
-    print("[INFO] Eliminando encabezados de página...")
+    print("[INFO] Eliminando encabezados y footers...")
+
+    # remover líneas tipo: 4.5.2016
+    text = re.sub(r'\n\d{1,2}\.\d{1,2}\.\d{4}\s*\n', '\n', text)
+
+    # remover líneas tipo: L 119/33
+    text = re.sub(r'\nL\s\d+/\d+\s*\n', '\n', text)
+
+    # remover línea "EN"
+    text = re.sub(r'\nEN\s*\n', '\n', text)
 
     text = re.sub(r'Official Journal of the European Union.*', '', text)
+
     text = re.sub(r'\d+\.\d+\.\d+\sL\s\d+/\d+', '', text)
 
     return text
-
 
 def remove_recitals(text: str) -> str:
     print("[INFO] Eliminando recitals...")
@@ -37,11 +45,9 @@ def remove_recitals(text: str) -> str:
     return text[match.start():]
 
 
-def process_file(input_path: Path, output_path: Path):
-    if not input_path.exists():
-        raise FileNotFoundError(f"No existe: {input_path}")
 
-    print(f"[INFO] Procesando archivo: {input_path}")
+def clean_single_file(input_path: Path, output_dir: Path):
+    print(f"\n[FILE] {input_path.name}")
 
     raw = input_path.read_text(encoding="utf-8")
 
@@ -49,18 +55,39 @@ def process_file(input_path: Path, output_path: Path):
     clean = remove_headers_footers(clean)
     clean = remove_recitals(clean)
 
+    output_path = output_dir / f"{input_path.stem}_clean.txt"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(clean, encoding="utf-8")
 
-    print(f"[INFO] Texto limpio guardado en: {output_path}")
-    print(f"[INFO] Caracteres finales: {len(clean)}")
+    print(f"[OK] Guardado: {output_path.name} ({len(clean)} chars)")
+
+
+def process_folder(input_dir: Path, output_dir: Path):
+
+    txt_files = list(input_dir.rglob("*.txt"))
+
+    if not txt_files:
+        print("[WARN] No hay archivos .txt en la carpeta")
+        return
+
+    print(f"[INFO] Archivos encontrados: {len(txt_files)}\n")
+
+    for txt in txt_files:
+        clean_single_file(txt, output_dir)
+
+    print("\n[OK] Limpieza masiva completada")
 
 
 def main():
-    input_path = Path("data/raw/CELEX_32016R0679_EN_TXT.txt")
-    output_path = Path("data/processed/gdpr_clean.txt")
 
-    process_file(input_path, output_path)
+    input_dir = Path("data/raw")
+    output_dir = Path("data/processed")
+
+    if not input_dir.exists():
+        print("No existe data/raw")
+        return
+
+    process_folder(input_dir, output_dir)
 
 
 if __name__ == "__main__":
