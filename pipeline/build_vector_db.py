@@ -18,7 +18,6 @@ def build_vector_database():
     print("[INFO] Cargando texto limpio...")
     text = DATA_PATH.read_text(encoding="utf-8")
 
-    # usar SIEMPRE el mismo chunker del sistema
     chunks = chunk_text(text)
 
     print("[INFO] Inicializando modelo de embeddings...")

@@ -1,37 +1,43 @@
 from pathlib import Path
 import sys
-import PyPDF2
+import fitz  # PyMuPDF
 
 
 def pdf_to_text(pdf_path: Path) -> str:
-    """Extrae texto de un PDF."""
+    """
+    Extrae texto preservando layout real del documento.
+    Mucho más preciso que PyPDF2 para documentos legales.
+    """
+
     if not pdf_path.exists():
         raise FileNotFoundError(f"No se encontró el archivo: {pdf_path}")
 
     print(f"[INFO] Leyendo PDF: {pdf_path}")
 
-    text = ""
-    with pdf_path.open("rb") as file:
-        reader = PyPDF2.PdfReader(file)
+    doc = fitz.open(pdf_path)
+    text_pages = []
 
-        print(f"[INFO] Páginas detectadas: {len(reader.pages)}")
+    print(f"[INFO] Páginas detectadas: {len(doc)}")
 
-        for i, page in enumerate(reader.pages):
-            page_text = page.extract_text() or ""
-            text += page_text
-            print(f"[DEBUG] Página {i+1} procesada")
+    for i, page in enumerate(doc):
+        blocks = page.get_text("blocks")
+
+        page_text = ""
+        for block in sorted(blocks, key=lambda b: (b[1], b[0])):
+            page_text += block[4].strip() + "\n"
+
+        text_pages.append(page_text)
+        print(f"[DEBUG] Página {i+1} procesada")
+
+    text = "\n".join(text_pages)
 
     print(f"[INFO] Extracción completada ({len(text)} caracteres)")
     return text
 
 
 def save_text(text: str, output_path: Path):
-    """Guarda el texto en archivo."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with output_path.open("w", encoding="utf-8") as f:
-        f.write(text)
-
+    output_path.write_text(text, encoding="utf-8")
     print(f"[INFO] Texto guardado en: {output_path}")
 
 

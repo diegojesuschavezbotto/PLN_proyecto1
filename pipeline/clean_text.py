@@ -2,51 +2,42 @@ from pathlib import Path
 import re
 
 
-def clean_gdpr_text(text: str) -> str:
-    """
-    Normaliza artefactos del PDF:
-    - Une palabras cortadas por salto de línea
-    - Normaliza saltos
-    - Limpia espacios
-    """
-
+def normalize_text(text: str) -> str:
     print("[INFO] Normalizando texto...")
 
-    # unir palabras cortadas
+    # unir palabras con guion de salto de línea
     text = re.sub(r'(\w)-\n(\w)', r'\1\2', text)
 
-    # normalizar saltos
-    text = re.sub(r'\n+', '\n', text)
+    # reemplazar saltos múltiples
+    text = re.sub(r'\n{2,}', '\n\n', text)
 
-    # limpiar espacios
+    # eliminar espacios duplicados
     text = re.sub(r'[ \t]+', ' ', text)
 
-    print("[INFO] Normalización completada")
+    return text
+
+
+def remove_headers_footers(text: str) -> str:
+    print("[INFO] Eliminando encabezados de página...")
+
+    text = re.sub(r'Official Journal of the European Union.*', '', text)
+    text = re.sub(r'\d+\.\d+\.\d+\sL\s\d+/\d+', '', text)
+
     return text
 
 
 def remove_recitals(text: str) -> str:
-    """
-    Elimina considerandos y deja solo el articulado del GDPR
-    """
-
     print("[INFO] Eliminando recitals...")
 
     match = re.search(r'CHAPTER\s+I', text)
-
     if not match:
-        print("[WARN] No se encontró CHAPTER I — se devuelve texto original")
+        print("[WARN] No se encontró CHAPTER I")
         return text
 
-    cleaned = text[match.start():]
-
-    print("[INFO] Recitals eliminados correctamente")
-    return cleaned
+    return text[match.start():]
 
 
 def process_file(input_path: Path, output_path: Path):
-    """Pipeline completo de limpieza"""
-
     if not input_path.exists():
         raise FileNotFoundError(f"No existe: {input_path}")
 
@@ -54,15 +45,15 @@ def process_file(input_path: Path, output_path: Path):
 
     raw = input_path.read_text(encoding="utf-8")
 
-    clean = clean_gdpr_text(raw)
+    clean = normalize_text(raw)
+    clean = remove_headers_footers(clean)
     clean = remove_recitals(clean)
-
-    print(f"[INFO] Caracteres finales: {len(clean)}")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(clean, encoding="utf-8")
 
     print(f"[INFO] Texto limpio guardado en: {output_path}")
+    print(f"[INFO] Caracteres finales: {len(clean)}")
 
 
 def main():
