@@ -80,8 +80,15 @@ def process_folder(input_dir: Path, output_dir: Path):
 
 def main():
 
-    input_dir = Path("data/raw")
-    output_dir = Path("data/processed")
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    DATA_DIR = BASE_DIR / "Data"
+
+    input_dir = DATA_DIR / "raw"
+    output_dir = DATA_DIR / "processed"
+
+    if not input_dir.exists():
+        print("No existe data/raw")
+        return
 
     if not input_dir.exists():
         print("No existe data/raw")
