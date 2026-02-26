@@ -2,14 +2,11 @@ from pathlib import Path
 import chromadb
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 
-# === Config ===
-BASE_DIR = Path(__file__).resolve().parent.parent
-DB_PATH = str(BASE_DIR / "Data" / "chroma_db")
-COLLECTION_NAME = "legal_corpus"
 
+DB_PATH = "data/chroma_db"
+COLLECTION_NAME = "legal_corpus"
 EMBED_MODEL = "nomic-embed-text"
 LLM_MODEL = "llama3.2:3b"
-
 TOP_K = 4
 
 
@@ -65,7 +62,7 @@ Instrucciones:
 - Responde usando solo la información del contexto.
 - Si la respuesta no está en el contexto, di: "No encontré esa información en la base documental."
 - Sé claro y preciso.
-- Si es útil, cita la fuente por nombre de archivo.
+- Si es útil, menciona la fuente.
 
 Contexto:
 {context}
