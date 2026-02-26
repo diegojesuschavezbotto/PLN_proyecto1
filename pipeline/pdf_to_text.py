@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys
-import fitz  # PyMuPDF
+import pymupdf as fitz
 
 
 def extract_pdf_text(pdf_path: Path) -> str:

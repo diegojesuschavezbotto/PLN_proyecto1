@@ -2,7 +2,7 @@ from pathlib import Path
 import chromadb
 from langchain_ollama import OllamaEmbeddings
 
-from pipeline.chunking import chunk_text
+from chunking import chunk_text
 
 
 PROCESSED_DIR = Path("data/processed")

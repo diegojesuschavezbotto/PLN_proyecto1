@@ -63,7 +63,7 @@ def clean_single_file(input_path: Path, output_dir: Path):
 
 
 def process_folder(input_dir: Path, output_dir: Path):
-
+    
     txt_files = list(input_dir.rglob("*.txt"))
 
     if not txt_files:
