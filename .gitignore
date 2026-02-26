@@ -26,10 +26,15 @@ venv/
 data/raw/*.pdf
 data/raw/*.txt
 data/processed/*.txt
+pipeline/data/raw/*.pdf
+pipeline/data/raw/*.txt
+pipeline/data/processed/*.txt
+
 
 # Chroma vector database
 
 data/chroma_db/
+pipeline/data/chroma_db/
 
 # Ollama cache (opcional)
 
