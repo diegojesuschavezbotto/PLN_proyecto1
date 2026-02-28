@@ -1,12 +1,21 @@
 import re
 import chromadb
 from langchain_ollama import OllamaEmbeddings, ChatOllama
+import json
+data = {}
 
-DB_PATH = "data/chroma_db"
-COLLECTION_NAME = "legal_corpus"
-EMBED_MODEL = "nomic-embed-text"
-LLM_MODEL = "llama3.2:3b"
-TOP_K = 5
+try:
+    with open("var.json", "r", encoding="utf-8") as file:
+        data = json.load(file)
+   
+except FileNotFoundError:
+    print("Archivo var.json no existe, se usarán valores por defecto")
+
+DB_PATH = data.get("DB_PATH", "data/chroma_db")
+COLLECTION_NAME = data.get("COLLECTION_NAME", "legal_corpus")
+EMBED_MODEL = data.get("EMBED_MODEL", "nomic-embed-text")
+LLM_MODEL = data.get("LLM_MODEL", "llama3.2:3b")
+TOP_K = data.get("TOP_K", 5)
 
 
 def get_collection():

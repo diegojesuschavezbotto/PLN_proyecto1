@@ -4,8 +4,18 @@ from typing import List
 
 
 # configuración única global del proyecto
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 200
+
+data {}
+
+try:
+    with open("var.json", "r", encoding="utf-8") as file:
+        data = json.load(file)
+    print("File data =", data)
+except FileNotFoundError:
+    print("Archivo var.json no existe, se usarán valores por defecto")
+
+CHUNK_SIZE = data.get("CHUNK_SIZE", 1000)
+CHUNK_OVERLAP = data.get("CHUNK_OVERLAP", 200)
 
 
 def get_splitter() -> RecursiveCharacterTextSplitter:
