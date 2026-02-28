@@ -1,12 +1,27 @@
 from pathlib import Path
 import chromadb
+import json
 from langchain_ollama import OllamaEmbeddings
 
 from pipeline.chunking import chunk_text
+data = {}
 
-PROCESSED_DIR = Path("data/processed")
-DB_PATH = "data/chroma_db"
-COLLECTION_NAME = "legal_corpus"
+try:
+    with open("var.json", "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+except FileNotFoundError:
+    print("Archivo var.json no existe, se usarán valores por defecto")
+
+except json.JSONDecodeError:
+    print("Archivo var.json es inválido, se usarán valores por defecto")
+
+
+PROCESSED_DIR = Path(data.get("PROCESSED_DIR", "data/processed"))
+DB_PATH = data.get("DB_PATH", "data/chroma_db")
+COLLECTION_NAME = data.get("COLLECTION_NAME", "legal_corpus")
+
+
 
 
 def detect_compliance_from_filename(filename: str) -> str:
