@@ -1,0 +1,4 @@
+{"PROCESSED_DIR" : "data/processed"}
+{"DB_PATH" : "data/chroma_db"}
+{"COLLECTION_NAME" : "legal_corpus"}
+
